@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบทดสอบออนไลน์: จำนวนจริง ม.2</title>
+    <meta name="description" content="แบบทดสอบวัดผลสัมฤทธิ์ทางการเรียนวิชาคณิตศาสตร์ เรื่อง จำนวนจริง ชั้นมัธยมศึกษาปีที่ 2">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX for high-quality mathematical formulas rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        :root {
+            --primary: hsl(243, 75%, 59%);
+            --primary-hover: hsl(243, 75%, 52%);
+            --primary-light: hsl(243, 100%, 96%);
+            --secondary: hsl(215, 15%, 54%);
+            --success: hsl(150, 84%, 37%);
+            --success-light: hsl(150, 84%, 96%);
+            --error: hsl(0, 84%, 60%);
+            --error-light: hsl(0, 84%, 96%);
+            --warning: hsl(38, 92%, 50%);
+            --bg-gradient: linear-gradient(135deg, hsl(210, 40%, 96%) 0%, hsl(214, 32%, 91%) 100%);
+            --card-bg: hsl(0, 0%, 100%);
+            --text-main: hsl(222, 47%, 11%);
+            --text-muted: hsl(215, 16%, 37%);
+            --border-color: hsl(214, 32%, 87%);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.03);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03), 0 10px 15px -3px rgba(0,0,0,0.03);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* Container & Animations */
+        .app-container {
+            width: 100%;
+            max-width: 850px;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-slide {
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Screen States */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Welcome Screen styling */
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .welcome-header h1 {
+            font-family: 'Outfit', 'Sarabun', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .badge-info {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 15px;
+            border: 1px solid hsla(243, 75%, 59%, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 1.05rem;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            outline: none;
+            background-color: hsl(210, 40%, 99%);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px hsla(243, 75%, 59%, 0.15);
+            background-color: #fff;
+        }
+
+        .row-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .row-grid {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 25px;
+            }
+        }
+
+        /* Buttons styling */
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 14px 28px;
+            border-radius: var(--radius-sm);
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px hsla(243, 75%, 59%, 0.25);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px hsla(243, 75%, 59%, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: hsl(210, 40%, 96%);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: hsl(214, 32%, 91%);
+            color: var(--text-main);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-disabled {
+            background-color: hsl(214, 32%, 91%);
+            color: hsl(215, 15%, 75%);
+            cursor: not-allowed;
+            pointer-events: none;
+            border: 1px solid var(--border-color);
+            box-shadow: none !important;
+        }
+
+        /* Quiz Header & UI elements */
+        .quiz-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-badge {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-box {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: hsl(210, 40%, 96%);
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .timer-box.warning {
+            color: var(--error);
+            background-color: var(--error-light);
+            border-color: hsla(0, 84%, 60%, 0.15);
+            animation: pulseRed 1s infinite alternate;
+        }
+
+        @keyframes pulseRed {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background-color: hsl(210, 40%, 93%);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary);
+            border-radius: 10px;
+            transition: width 0.3s ease-out;
+        }
+
+        /* Question & Choices Card Styles */
+        .question-box {
+            margin-bottom: 30px;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 25px;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        @media (min-width: 650px) {
+            .choices-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .choices-grid.single-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .choice-card {
+            background-color: #fff;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 18px 22px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            align-items: center;
+            font-size: 1.05rem;
+        }
+
+        .choice-card:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .choice-card.selected {
+            border-color: var(--primary);
+            background-color: hsl(243, 100%, 94%);
+            box-shadow: 0 0 0 3px hsla(243, 75%, 59%, 0.15);
+            font-weight: 600;
+        }
+
+        .choice-card .katex {
+            font-size: 1.1rem;
+        }
+
+        /* Navigation Controls */
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* Question Grid / Map */
+        .q-map-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .q-map-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .q-map-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 6px;
+            }
+        }
+
+        .q-map-item {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border-color);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: hsl(210, 40%, 98%);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .q-map-item:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .q-map-item.answered {
+            background-color: hsl(215, 16%, 88%);
+            border-color: hsl(215, 16%, 82%);
+            color: var(--text-main);
+        }
+
+        .q-map-item.active {
+            border-color: var(--primary);
+            background-color: var(--primary);
+            color: #fff !important;
+            box-shadow: 0 0 0 3px hsla(243, 75%, 59%, 0.2);
+        }
+
+        /* Summary Score styling */
+        .summary-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .summary-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .summary-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .result-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 650px) {
+            .result-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* Score Circle Progress chart */
+        .score-circle-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: hsl(210, 40%, 98%);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .score-svg {
+            width: 160px;
+            height: 160px;
+            transform: rotate(-90deg);
+        }
+
+        .score-svg-bg {
+            fill: none;
+            stroke: hsl(210, 40%, 90%);
+            stroke-width: 14;
+        }
+
+        .score-svg-fill {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 14;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .score-label {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .score-number {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .score-total {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .evaluation-badge {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Score details listing */
+        .score-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            background-color: hsl(210, 40%, 98%);
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-item span:first-child {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .detail-item span:last-child {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Solutions Screen styling */
+        .solutions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .solutions-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .solutions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .solution-card {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .solution-card.correct {
+            border-color: var(--success);
+        }
+
+        .solution-card.incorrect {
+            border-color: var(--error);
+        }
+
+        .solution-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background-color: hsl(210, 40%, 98%);
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .solution-title-bar h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .solution-card.correct .solution-title-bar {
+            background-color: var(--success-light);
+            border-bottom-color: hsla(150, 84%, 37%, 0.1);
+            color: var(--success);
+        }
+
+        .solution-card.incorrect .solution-title-bar {
+            background-color: var(--error-light);
+            border-bottom-color: hsla(0, 84%, 60%, 0.1);
+            color: var(--error);
+        }
+
+        .status-badge {
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+
+        .solution-card.correct .status-badge {
+            background-color: hsla(150, 84%, 37%, 0.15);
+            color: var(--success);
+        }
+
+        .solution-card.incorrect .status-badge {
+            background-color: hsla(0, 84%, 60%, 0.15);
+            color: var(--error);
+        }
+
+        .solution-content {
+            padding: 24px;
+            background-color: #fff;
+        }
+
+        .solution-choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .solution-choices {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sol-choice {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sol-choice.selected-wrong {
+            border-color: var(--error);
+            background-color: var(--error-light);
+            color: var(--error);
+            font-weight: 600;
+        }
+
+        .sol-choice.correct-ans {
+            border-color: var(--success);
+            background-color: var(--success-light);
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .explanation-box {
+            background-color: hsl(210, 40%, 98%);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            margin-top: 20px;
+            border: 1.5px dashed var(--border-color);
+        }
+
+        .explanation-box h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .explanation-box p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .obj-box {
+            margin-top: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .obj-box strong {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+
+    <!-- 1. WELCOME / START SCREEN -->
+    <div id="welcome-screen" class="card screen active animate-slide">
+        <div class="welcome-header">
+            <h1>ระบบทดสอบออนไลน์: จำนวนจริง ม.2</h1>
+            <p>แบบทดสอบวัดผลสัมฤทธิ์ทางการเรียนวิชาคณิตศาสตร์</p>
+            <span class="badge-info">หน่วยการเรียนรู้: ระบบจำนวนจริง (Real Numbers)</span>
+        </div>
+        
+        <form id="start-form" onsubmit="startQuiz(event)">
+            <div class="input-group">
+                <label for="student-name">ชื่อเล่นผู้สอบ</label>
+                <input type="text" id="student-name" placeholder="ระบุชื่อเล่นของคุณ" required autocomplete="off">
+            </div>
+
+            <div style="margin-top: 15px; margin-bottom: 25px; color: var(--text-muted); font-size: 0.95rem;">
+                <strong>รายละเอียดแบบทดสอบ:</strong>
+                <ul style="margin-left: 20px; margin-top: 8px;">
+                    <li>ข้อสอบเป็นแบบปรนัย 4 ตัวเลือก จำนวน 20 ข้อ</li>
+                    <li>เวลาในการทำข้อสอบทั้งหมด 50 นาที (มีระบบนับถอยหลัง)</li>
+                    <li>ระบบจะวัดผลคะแนนและวิเคราะห์เฉลยวิธีคิดให้อย่างละเอียดหลังจากส่งคำตอบ</li>
+                </ul>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">เริ่มทำข้อสอบ</button>
+        </form>
+    </div>
+
+    <!-- 2. QUIZ SCREEN -->
+    <div id="quiz-screen" class="card screen animate-slide">
+        <!-- Top bar with student details and timer -->
+        <div class="quiz-navbar">
+            <div class="student-badge">
+                <span>👤</span>
+                <span id="display-student-name">ชื่อผู้สอบ</span>
+            </div>
+            <div class="timer-box" id="quiz-timer">
+                <span>⏱️</span>
+                <span id="time-left">50:00</span>
+            </div>
+        </div>
+
+        <!-- Progress bar indicator -->
+        <div class="progress-container">
+            <div class="progress-info">
+                <span id="progress-question-num">คำถามข้อที่ 1 / 20</span>
+                <span id="progress-percent">0% เสร็จสิ้น</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar-fill"></div>
+            </div>
+        </div>
+
+        <!-- Question display card -->
+        <div class="question-box">
+            <span class="section-label" id="question-section-label">ส่วนที่ 1: จำนวนตรรกยะและอตรรกยะ</span>
+            <div class="question-text" id="question-text-el">
+                <!-- Question text renders here -->
+            </div>
+        </div>
+
+        <!-- Choices selection container -->
+        <div class="choices-grid" id="choices-container-el">
+            <!-- Choices card buttons render here -->
+        </div>
+
+        <!-- Controls navigation buttons -->
+        <div class="quiz-controls">
+            <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()">ย้อนกลับ</button>
+            <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()">ถัดไป</button>
+            <button class="btn btn-success" id="btn-submit" onclick="confirmSubmitQuiz()" style="background-color: var(--success); display: none;">ส่งกระดาษคำตอบ</button>
+        </div>
+
+        <!-- Bottom grid navigation map -->
+        <div class="q-map-container">
+            <p class="q-map-title">แผนผังคำถาม (ข้ามไปยังข้อต่างๆ ได้):</p>
+            <div class="q-map-grid" id="q-map-grid-el">
+                <!-- Numbers 1 to 20 generate here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SCORE SUMMARY SCREEN -->
+    <div id="summary-screen" class="card screen animate-slide">
+        <div class="summary-header">
+            <h2>ผลคะแนนการทดสอบ</h2>
+            <p>ระบบบันทึกคำตอบและประเมินผลสำเร็จแล้ว</p>
+        </div>
+
+        <div class="result-layout">
+            <!-- Circular score chart -->
+            <div class="score-circle-container">
+                <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 160px; height: 160px;">
+                    <svg class="score-svg">
+                        <circle class="score-svg-bg" cx="80" cy="80" r="70"></circle>
+                        <circle class="score-svg-fill" id="score-circle-fill" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="440"></circle>
+                    </svg>
+                    <div class="score-label">
+                        <span class="score-number" id="result-score-txt">0</span>
+                        <span class="score-total">คะแนนเต็ม 20</span>
+                    </div>
+                </div>
+                <div class="evaluation-badge" id="result-evaluation-txt">ประเมินผล: ผ่านเกณฑ์</div>
+            </div>
+
+            <!-- Details stats list -->
+            <div class="score-details">
+                <div class="detail-item">
+                    <span>ชื่อผู้ทำข้อสอบ:</span>
+                    <span id="result-name">สมชาย ดีเด่น</span>
+                </div>
+
+                <div class="detail-item">
+                    <span>เวลาที่ใช้ทดสอบ:</span>
+                    <span id="result-time-spent">10 นาที 25 วินาที</span>
+                </div>
+                <div class="detail-item">
+                    <span>ตอบถูกต้อง:</span>
+                    <span id="result-correct-count" style="color: var(--success);">0 ข้อ</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <button class="btn btn-primary" onclick="showSolutionsScreen()">🔍 ดูเฉลยวิธีคิดและวิเคราะห์ข้อสอบ</button>
+            <button class="btn btn-secondary" onclick="restartQuiz()">🔄 ทำข้อสอบใหม่อีกครั้ง</button>
+        </div>
+    </div>
+
+    <!-- 4. DETAILED SOLUTIONS SCREEN -->
+    <div id="solutions-screen" class="card screen animate-slide">
+        <div class="solutions-header">
+            <h2>เฉลยคำอธิบายอย่างละเอียด</h2>
+            <button class="btn btn-secondary btn-sm" onclick="backToSummary()">ย้อนกลับไปหน้าสรุป</button>
+        </div>
+
+        <!-- Solutions list placeholder -->
+        <div class="solutions-list" id="solutions-list-el">
+            <!-- Dynamically populated answer review cards -->
+        </div>
+
+        <div style="text-align: center;">
+            <button class="btn btn-secondary" onclick="backToSummary()">กลับไปหน้าสรุปคะแนน</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // System variables and database
+    let studentName = "";
+    let studentClass = "";
+    let studentNo = "";
+    let currentQuestionIndex = 0;
+    let studentAnswers = Array(20).fill(null); // stores index 0-3 of chosen options
+    let quizTimeLeft = 50 * 60; // 50 minutes in seconds
+    let timerInterval = null;
+    let startTime = 0;
+    let timeSpentSeconds = 0;
+
+    const questions = [
+        {
+            num: 1,
+            section: "ส่วนที่ 1: จำนวนตรรกยะและจำนวนอตรรกยะ",
+            text: "ค่าของ \\(0.2\\dot{7}\\) ตรงกับเศษส่วนในข้อใด",
+            choices: ["ก. \\(\\frac{27}{99}\\)", "ข. \\(\\frac{25}{99}\\)", "ค. \\(\\frac{25}{90}\\)", "ง. \\(\\frac{27}{90}\\)"],
+            correct: 2,
+            sol: "จากสูตรเปลี่ยนทศนิยมซ้ำเป็นเศษส่วน:<br>เศษส่วน = \\(\\frac{\\text{ตัวเลขหลังจุดทั้งหมด} - \\text{ตัวเลขที่ไม่ซ้ำ}}{\\text{เลข 9 แทนตัวที่ซ้ำ และเลข 0 แทนตัวที่ไม่ซ้ำ}}\\)<br><br>จากโจทย์ \\(0.2\\dot{7}\\):<br>- ตัวเลขหลังจุดทั้งหมดคือ \\(27\\)<br>- ตัวที่ไม่ซ้ำคือ \\(2\\)<br>- มีตัวซ้ำ 1 ตัว (ใส่ 9) และตัวไม่ซ้ำหลังจุด 1 ตัว (ใส่ 0) อยู่ข้างหลัง<br>จะได้เศษส่วนเป็น \\(\\frac{27 - 2}{90} = \\frac{25}{90}\\) (หรือทอนเศษส่วนอย่างต่ำได้ \\(\\frac{5}{18}\\))",
+            objective: "การแปลงทศนิยมซ้ำเป็นเศษส่วน"
+        },
+        {
+            num: 2,
+            section: "ส่วนที่ 1: จำนวนตรรกยะและจำนวนอตรรกยะ",
+            text: "ข้อใดต่อไปนี้เป็น <strong>จำนวนอตรรกยะ</strong> ทุกจำนวน",
+            choices: [
+                "ก. \\(\\pi, \\sqrt{2}, 0.1010010001...\\)",
+                "ข. \\(\\frac{22}{7}, \\sqrt{9}, 3.14\\)",
+                "ค. \\(0.3\\dot{5}, \\sqrt{5}, -\\sqrt{4}\\)",
+                "ง. \\(\\sqrt[3]{-8}, \\pi, \\sqrt{3}\\)"
+            ],
+            correct: 0,
+            sol: "- <strong>ตัวเลือก ก:</strong> \\(\\pi\\) เป็นจำนวนอตรรกยะ, \\(\\sqrt{2}\\) ถอดรากไม่ได้เป็นทศนิยมสิ้นสุด (อตรรกยะ), \\(0.1010010001...\\) เป็นทศนิยมไม่รู้จบแบบไม่ซ้ำ (อตรรกยะ) ดังนั้น เป็นจำนวนอตรรกยะทุกตัว <strong>(ถูกต้อง)</strong><br>- <strong>ตัวเลือก ข:</strong> \\(\\frac{22}{7}\\) เป็นเศษส่วน (ตรรกยะ), \\(\\sqrt{9} = 3\\) (ตรรกยะ), \\(3.14\\) เป็นทศนิยมสิ้นสุด (ตรรกยะ)<br>- <strong>ตัวเลือก ค:</strong> \\(0.3\\dot{5}\\) เป็นทศนิยมซ้ำ (ตรรกยะ), \\(-\\sqrt{4} = -2\\) (ตรรกยะ)<br>- <strong>ตัวเลือก ง:</strong> \\(\\sqrt[3]{-8} = -2\\) (ตรรกยะ)",
+            objective: "การจำแนกประเภทของจำนวนจริง (ตรรกยะ vs อตรรกยะ)"
+        },
+        {
+            num: 3,
+            section: "ส่วนที่ 1: จำนวนตรรกยะและจำนวนอตรรกยะ",
+            text: "พิจารณาข้อความต่อไปนี้:<br>1) ทศนิยมไม่รู้จบทุกจำนวนเป็นจำนวนอตรรกยะ<br>2) มีจำนวนจริง \\(x\\) ที่ทำให้ \\(\\sqrt{x} < 0\\)<br>3) เซตของจำนวนตรรกยะและเซตของจำนวนอตรรกยะไม่มีสมาชิกประเมินร่วมกัน (อินเตอร์เซกชันกันเป็นเซตว่าง)<br><strong>ข้อใดกล่าวถูกต้อง</strong>",
+            choices: [
+                "ก. ถูกต้องเฉพาะข้อ 3)",
+                "ข. ถูกต้องเฉพาะข้อ 1) และ 3)",
+                "ค. ถูกต้องทุกข้อ",
+                "ง. ไม่มีข้อใดถูกต้อง"
+            ],
+            correct: 0,
+            sol: "- <strong>ข้อความ 1) ผิด</strong> เพราะทศนิยมซ้ำ (เช่น \\(0.333...\\)) เป็นทศนิยมไม่รู้จบ แต่สามารถเขียนเป็นเศษส่วนได้ จึงจัดเป็นจำนวนตรรกยะ<br>- <strong>ข้อความ 2) ผิด</strong> เพราะเครื่องหมายรากที่สอง (\\(\\sqrt{\\cdot}\\)) ถูกนิยามให้แทนค่าหลักที่เป็นบวกหรือศูนย์เท่านั้น (\\(\\sqrt{x} \\ge 0\\))<br>- <strong>ข้อความ 3) ถูกต้อง</strong> เพราะจำนวนจริงใดๆ จะเป็นได้แค่จำนวนตรรกยะหรืออตรรกยะอย่างใดอย่างหนึ่งเท่านั้น ไม่มีสมาชิกร่วมกัน (\\(\\mathbb{Q} \\cap \\mathbb{Q}' = \\varnothing\\))",
+            objective: "ความเข้าใจเชิงแนวคิด (Concept) ของโครงสร้างระบบจำนวนจริง"
+        },
+        {
+            num: 4,
+            section: "ส่วนที่ 1: จำนวนตรรกยะและจำนวนอตรรกยะ",
+            text: "ข้อใดต่อไปนี้เป็นจริงเสมอ",
+            choices: [
+                "ก. ผลบวกของจำนวนอตรรกยะสองจำนวนต้องเป็นจำนวนอตรรกยะเสมอ",
+                "ข. ผลคูณของจำนวนอตรรกยะสองจำนวนต้องเป็นจำนวนอตรรกยะเสมอ",
+                "ค. ผลบวกของจำนวนตรรกยะกับจำนวนอตรรกยะเป็นจำนวนอตรรกยะเสมอ",
+                "ง. ผลหารของจำนวนอตรรกยะสองจำนวนต้องเป็นจำนวนอตรรกยะเสมอ"
+            ],
+            correct: 2,
+            sol: "- <strong>ตัวเลือก ก:</strong> ไม่จริงเสมอ เช่น \\(\\sqrt{2} + (-\\sqrt{2}) = 0\\) (เป็นจำนวนตรรกยะ)<br>- <strong>ตัวเลือก ข:</strong> ไม่จริงเสมอ เช่น \\(\\sqrt{2} \\times \\sqrt{2} = 2\\) (เป็นจำนวนตรรกยะ)<br>- <strong>ตัวเลือก ค:</strong> <strong>จริงเสมอ</strong> ตามทฤษฎีระบบจำนวนจริง เมื่อนำตรรกยะบวกอตรรกยะ ผลลัพธ์ที่ได้จะเป็นอตรรกยะเสมอ<br>- <strong>ตัวเลือก ง:</strong> ไม่จริงเสมอ เช่น \\(\\frac{\\sqrt{8}}{\\sqrt{2}} = \\sqrt{4} = 2\\) (เป็นจำนวนตรรกยะ)",
+            objective: "สมบัติการปิดและการดำเนินงานระหว่างจำนวนตรรกยะและอตรรกยะ"
+        },
+        {
+            num: 5,
+            section: "ส่วนที่ 1: จำนวนตรรกยะและจำนวนอตรรกยะ",
+            text: "ค่าของ \\(1.1\\dot{3}\\dot{6}\\) เท่ากับเศษส่วนในข้อใด",
+            choices: ["ก. \\(\\frac{25}{22}\\)", "ข. \\(\\frac{125}{110}\\)", "ค. \\(\\frac{225}{198}\\)", "ง. ถูกทุกข้อ"],
+            correct: 3,
+            sol: "แปลงทศนิยมซ้ำ \\(1.1\\dot{3}\\dot{6}\\):<br>\\(1.1\\dot{3}\\dot{6} = \\frac{1136 - 11}{990} = \\frac{1125}{990}\\)<br>- ตัดทอนด้วย 45 ทั้งเศษและส่วน: \\(\\frac{1125 \\div 45}{990 \\div 45} = \\frac{25}{22}\\) (ตรงกับ ก.)<br>- นำ \\(\\frac{5}{5}\\) มาคูณ: \\(\\frac{25 \\times 5}{22 \\times 5} = \\frac{125}{110}\\) (ตรงกับ ข.)<br>- นำ \\(\\frac{9}{9}\\) มาคูณ: \\(\\frac{25 \\times 9}{22 \\times 9} = \\frac{225}{198}\\) (ตรงกับ ค.)<br>ดังนั้น ตัวเลือก ก, ข และ ค ล้วนถูกต้องและมีค่าเท่ากันทั้งหมด",
+            objective: "การเขียนทศนิยมซ้ำและความเท่ากันของเศษส่วน (คิดวิเคราะห์)"
+        },
+        {
+            num: 6,
+            section: "ส่วนที่ 1: จำนวนตรรกยะและจำนวนอตรรกยะ",
+            text: "ข้อความใดต่อไปนี้<strong>ไม่ถูกต้อง</strong>",
+            choices: [
+                "ก. บนเส้นจำนวน จะมีจุดที่แทนจำนวนจริงอยู่เสมอ",
+                "ข. ระหว่างสองจำนวนตรรกยะใดๆ จะมีจำนวนตรรกยะอีกจำนวนหนึ่งอยู่เสมอ",
+                "ค. ระหว่างสองจำนวนอตรรกยะใดๆ จะมีจำนวนตรรกยะอีกจำนวนหนึ่งอยู่เสมอ",
+                "ง. ถ้า \\(a\\) เป็นจำนวนจริงใดๆ แล้ว \\(\\sqrt{a^2} = a\\) เสมอ"
+            ],
+            correct: 3,
+            sol: "ตัวเลือก <strong>ง. ไม่ถูกต้อง</strong> เพราะตามบทนิยาม \\(\\sqrt{a^2} = |a|\\) ซึ่งค่าที่ได้ต้องไม่เป็นลบเสมอ เช่น ถ้าให้ \\(a = -3\\) จะได้ \\(\\sqrt{(-3)^2} = \\sqrt{9} = 3\\) ซึ่งค่าที่ได้ขัดแย้งเพราะ \\(3 \\neq a\\) (ซึ่งคือ -3) สำหรับจำนวนลบใดๆ",
+            objective: "ความเข้าใจสมบัติบนเส้นจำนวนและสมบัติรากที่สอง \\(\\sqrt{a^2} = |a|\\)"
+        },
+        {
+            num: 7,
+            section: "ส่วนที่ 2: รากที่สอง",
+            text: "ประโยคใดในข้อต่อไปนี้กล่าวได้ถูกต้องที่สุด",
+            choices: [
+                "ก. รากที่สองของ 16 คือ 4",
+                "ข. รากที่สองของ 16 คือ \\(\\pm 4\\)",
+                "ค. \\(\\sqrt{16} = \\pm 4\\)",
+                "ง. รากที่สองของ 16 คือ \\(\\sqrt{16}\\) เพียงจำนวนเดียว"
+            ],
+            correct: 1,
+            sol: "- บทนิยาม: รากที่สองของ \\(a\\) คือจำนวนที่ยกกำลังสองแล้วได้ \\(a\\) ดังนั้นรากที่สองของ 16 จึงมีสองราก คือ \\(4\\) และ \\(-4\\) (เขียนแทนด้วย \\(\\pm 4\\))<br>- ส่วนเครื่องหมายกรณฑ์ \\(\\sqrt{16}\\) หมายถึงรากที่สองที่เป็นบวกเท่านั้น ดังนั้น \\(\\sqrt{16} = 4\\) เท่านั้น (ไม่ใช่ \\(\\pm 4\\))<br>ดังนั้น ข้อ ข. กล่าวได้ถูกต้องที่สุด",
+            objective: "ความเข้าใจนิยามของรากที่สองและการใช้เครื่องหมายกรณฑ์ (Radical)"
+        },
+        {
+            num: 8,
+            section: "ส่วนที่ 2: รากที่สอง",
+            text: "ค่าของ \\(\\sqrt{256} - \\sqrt[3]{-343}\\) เท่ากับเท่าใด",
+            choices: ["ก. 9", "ข. 23", "ค. 25", "ง. 39"],
+            correct: 1,
+            sol: "- หาค่า \\(\\sqrt{256}\\): เนื่องจาก \\(16^2 = 256\\) จะได้ \\(\\sqrt{256} = 16\\)<br>- หาค่า \\(\\sqrt[3]{-343}\\): เนื่องจาก \\((-7)^3 = -343\\) จะได้ \\(\\sqrt[3]{-343} = -7\\)<br>- คำนวณผลลัพธ์: \\(16 - (-7) = 16 + 7 = 23\\)",
+            objective: "การคำนวณรากที่สองและรากที่สามของจำนวนเต็มที่เป็นกำลังสมบูรณ์"
+        },
+        {
+            num: 9,
+            section: "ส่วนที่ 2: รากที่สอง",
+            text: "ค่าของ \\(\\sqrt{0.0064} \\times \\sqrt{\\frac{25}{16}}\\) เท่ากับข้อใด",
+            choices: ["ก. 0.01", "ข. 0.1", "ค. 1", "ง. 10"],
+            correct: 1,
+            sol: "- หาค่า \\(\\sqrt{0.0064}\\): เนื่องจาก \\((0.08)^2 = 0.0064\\) จะได้ \\(\\sqrt{0.0064} = 0.08\\)<br>- หาค่า \\(\\sqrt{\\frac{25}{16}}\\): \\(\\frac{\\sqrt{25}}{\\sqrt{16}} = \\frac{5}{4} = 1.25\\)<br>- คูณผลลัพธ์: \\(0.08 \\times 1.25 = 0.1\\) (หรือคิดแบบเศษส่วน: \\(\\frac{8}{100} \\times \\frac{5}{4} = \\frac{2}{20} = \\frac{1}{10} = 0.1\\))",
+            objective: "การคำนวณรากที่สองในรูปทศนิยมและเศษส่วน"
+        },
+        {
+            num: 10,
+            section: "ส่วนที่ 2: รากที่สอง",
+            text: "กำหนดให้ \\(a < 0\\) และ \\(b > 0\\) ข้อใดคือค่าของ \\(\\sqrt{64a^2b^4}\\)",
+            choices: ["ก. \\(8ab^2\\)", "ข. \\(-8ab^2\\)", "ค. \\(8|a|b^2\\)", "ง. ทั้ง ข. และ ค. ถูกต้อง"],
+            correct: 3,
+            sol: "จากสมบัติกรณฑ์ที่สอง: \\(\\sqrt{64a^2b^4} = 8 \\times |a| \\times |b^2|\\)<br>- เนื่องจาก \\(b > 0\\) ทำให้ \\(b^2 > 0\\) เสมอ จะได้ \\(|b^2| = b^2\\) จึงได้คำตอบในรูป \\(8|a|b^2\\) (ตรงกับข้อ ค.)<br>- โจทย์ระบุว่า \\(a < 0\\) ดังนั้นตามนิยามค่าสัมบูรณ์ \\(|a| = -a\\) เมื่อนำไปแทนค่าจะได้ \\(8(-a)b^2 = -8ab^2\\) (ตรงกับข้อ ข.)<br>ดังนั้น ตัวเลือก ข. และ ค. ถูกต้องทั้งคู่ ข้อ ง. จึงเป็นข้อที่ถูกต้อง",
+            objective: "การหารากที่สองที่ติดตัวแปร โดยใช้สมบัติ \\(\\sqrt{x^2} = |x|\\) และพิจารณาเงื่อนไข"
+        },
+        {
+            num: 11,
+            section: "ส่วนที่ 2: รากที่สอง",
+            text: "จำนวนในข้อใดที่มีค่ามากที่สุด",
+            choices: ["ก. \\(2\\sqrt{7}\\)", "ข. \\(3\\sqrt{3}\\)", "ค. \\(4\\sqrt{2}\\)", "ง. 5"],
+            correct: 2,
+            sol: "เปรียบเทียบขนาดโดยนำแต่ละตัวเลือกมายกกำลังสอง:<br>- ก. \\((2\\sqrt{7})^2 = 4 \\times 7 = 28\\)<br>- ข. \\((3\\sqrt{3})^2 = 9 \\times 3 = 27\\)<br>- ค. \\((4\\sqrt{2})^2 = 16 \\times 2 = 32\\)<br>- ง. \\(5^2 = 25\\)<br>เนื่องจาก \\(32 > 28 > 27 > 25\\) ดังนั้น \\(4\\sqrt{2}\\) (หรือ \\(\\sqrt{32}\\)) มีค่ามากที่สุด",
+            objective: "การเปรียบเทียบค่าของจำนวนที่ติดรากที่สอง"
+        },
+        {
+            num: 12,
+            section: "ส่วนที่ 2: รากที่สอง",
+            text: "ผลลัพธ์ของ \\(\\sqrt{12} + 3\\sqrt{27} - \\sqrt{75}\\) ตรงกับข้อใด",
+            choices: ["ก. \\(6\\sqrt{3}\\)", "ข. \\(8\\sqrt{3}\\)", "ค. \\(10\\sqrt{3}\\)", "ง. \\(12\\sqrt{3}\\)"],
+            correct: 0,
+            sol: "ทำกรณฑ์ทุกจำนวนให้อยู่ในรูปกรณฑ์ที่คล้ายกัน:<br>- \\(\\sqrt{12} = \\sqrt{4 \\times 3} = 2\\sqrt{3}\\)<br>- \\(3\\sqrt{27} = 3\\sqrt{9 \\times 3} = 3(3\\sqrt{3}) = 9\\sqrt{3}\\)<br>- \\(\\sqrt{75} = \\sqrt{25 \\times 3} = 5\\sqrt{3}\\)<br>คำนวณ: \\(2\\sqrt{3} + 9\\sqrt{3} - 5\\sqrt{3} = (2 + 9 - 5)\\sqrt{3} = 6\\sqrt{3}\\)",
+            objective: "การบวก ลบ และจัดรูปจำนวนที่ติดกรณฑ์ที่สอง (Simplification)"
+        },
+        {
+            num: 13,
+            section: "ส่วนที่ 2: รากที่สอง",
+            text: "ถ้า \\(\\sqrt{3x - 5} = 4\\) แล้ว ค่าของ \\(x^2 + 1\\) มีค่าเท่าใด",
+            choices: ["ก. 8", "ข. 37", "ค. 50", "ง. 65"],
+            correct: 2,
+            sol: "แก้สมการรากเพื่อหาค่า \\(x\\):<br>\\(\\sqrt{3x - 5} = 4\\)<br>ยกกำลังสองทั้งสองข้าง: \\(3x - 5 = 16\\)<br>\\(3x = 21 \\implies x = 7\\)<br>โจทย์ถามหา \\(x^2 + 1\\):<br>\\(x^2 + 1 = 7^2 + 1 = 49 + 1 = 50\\)",
+            objective: "การแก้สมการที่ติดรากที่สองและการหาค่าของพหุนาม"
+        },
+        {
+            num: 14,
+            section: "ส่วนที่ 3: รากที่สาม",
+            text: "ข้อใดต่อไปนี้<strong>ไม่ถูกต้อง</strong>เกี่ยวกับรากที่สาม",
+            choices: [
+                "ก. รากที่สามของจำนวนจริงใดๆ จะมีเพียงค่าเดียวเสมอ",
+                "ข. รากที่สามของจำนวนลบจะเป็นจำนวนลบเสมอ",
+                "ค. \\(\\sqrt[3]{a^3} = |a|\\) สำหรับทุกจำนวนจริง \\(a\\)",
+                "ง. \\(\\sqrt[3]{a} \\cdot \\sqrt[3]{b} = \\sqrt[3]{ab}\\) สำหรับทุกจำนวนจริง \\(a\\) และ \\(b\\)"
+            ],
+            correct: 2,
+            sol: "- <strong>ข้อ ค. ไม่ถูกต้อง</strong> เพราะตามสมบัติรากที่สามของจำนวนจริงใดๆ \\(\\sqrt[3]{a^3} = a\\) เสมอ ไม่ว่าจะบวกหรือลบ โดยไม่จำเป็นต้องใส่เครื่องหมายค่าสัมบูรณ์ เช่น \\(\\sqrt[3]{(-2)^3} = -2\\) ซึ่งมีค่าแตกต่างกับ \\(|-2| = 2\\)<br>- ข้อ ก, ข และ ง เป็นสมบัติและนิยามรากที่สามที่ถูกต้องอยู่แล้ว",
+            objective: "ความเข้าใจนิยามและสมบัติของรากที่สาม"
+        },
+        {
+            num: 15,
+            section: "ส่วนที่ 3: รากที่สาม",
+            text: "ค่าของ \\(\\sqrt[3]{216} + \\sqrt[3]{-0.125} - \\sqrt[3]{\\frac{8}{27}}\\) เท่ากับข้อใด",
+            choices: ["ก. \\(4\\frac{5}{6}\\)", "ข. \\(5\\frac{1}{6}\\)", "ค. \\(5\\frac{5}{6}\\)", "ง. \\(6\\frac{1}{6}\\)"],
+            correct: 0,
+            sol: "คำนวณแยกส่วน:<br>- \\(\\sqrt[3]{216} = 6\\) (เพราะ \\(6^3 = 216\\))<br>- \\(\\sqrt[3]{-0.125} = -0.5 = -\\frac{1}{2}\\) (เพราะ \\((-0.5)^3 = -0.125\\))<br>- \\(\\sqrt[3]{\\frac{8}{27}} = \\frac{2}{3}\\) (เพราะ \\((\\frac{2}{3})^3 = \\frac{8}{27}\\))<br>แทนค่าและบวกลบเศษส่วน: \\(6 - \\frac{1}{2} - \\frac{2}{3} = \\frac{36 - 3 - 4}{6} = \\frac{29}{6} = 4\\frac{5}{6}\\)",
+            objective: "การดำเนินงานร่วมกันของรากที่สามที่เป็นจำนวนเต็ม ทศนิยม และเศษส่วน"
+        },
+        {
+            num: 16,
+            section: "ส่วนที่ 3: รากที่สาม",
+            text: "ถ้า \\(x^3 = -512\\) และ \\(\\sqrt{y} = 6\\) แล้ว ค่าของ \\(x + y\\) เท่ากับข้อใด",
+            choices: ["ก. -44", "ข. 28", "ค. 44", "ง. 52"],
+            correct: 1,
+            sol: "- หาค่า \\(x\\): จาก \\(x^3 = -512 \\implies x = \\sqrt[3]{-512} = -8\\) (เนื่องจาก \\((-8)^3 = -512\\))<br>- หาค่า \\(y\\): จาก \\(\\sqrt{y} = 6 \\implies y = 36\\) (ยกกำลังสองทั้งสองข้าง)<br>- หาค่า \\(x+y\\): \\(-8 + 36 = 28\\)",
+            objective: "การแก้สมการที่มีรากที่สามและรากที่สองร่วมกัน"
+        },
+        {
+            num: 17,
+            section: "ส่วนที่ 3: รากที่สาม",
+            text: "ผลลัพธ์ของ \\(\\frac{\\sqrt[3]{81} \\times \\sqrt[3]{9}}{\\sqrt{18} \\div \\sqrt{2}}\\) เท่ากับข้อใด",
+            choices: ["ก. 1", "ข. 3", "ค. 9", "ง. 27"],
+            correct: 1,
+            sol: "- หาค่าตัวเศษ: \\(\\sqrt[3]{81} \\times \\sqrt[3]{9} = \\sqrt[3]{81 \\times 9} = \\sqrt[3]{729} = 9\\) (เพราะ \\(9^3 = 729\\))<br>- หาค่าตัวส่วน: \\(\\sqrt{18} \\div \\sqrt{2} = \\sqrt{\\frac{18}{2}} = \\sqrt{9} = 3\\)<br>- นำตัวเศษหารด้วยตัวส่วน: \\(\\frac{9}{3} = 3\\)",
+            objective: "การคูณ การหาร และการลดรูปของจำนวนที่ติดกรณฑ์ที่สองและสาม"
+        },
+        {
+            num: 18,
+            section: "ส่วนที่ 3: รากที่สาม",
+            text: "ถ้า \\(a = \\sqrt{3}\\) และ \\(b = \\sqrt[3]{5}\\) ข้อใดเปรียบเทียบค่าของ \\(a\\) และ \\(b\\) ได้ถูกต้อง",
+            choices: ["ก. \\(a < b\\)", "ข. \\(a > b\\)", "ค. \\(a = b\\)", "ง. ข้อมูลไม่เพียงพอในการเปรียบเทียบ"],
+            correct: 1,
+            sol: "เปรียบเทียบขนาดของ \\(a = 3^{\\frac{1}{2}}\) และ \\(b = 5^{\\frac{1}{3}}\) โดยทำดัชนีรากให้เท่ากันคือ 6 (ค.ร.น. ของ 2 และ 3) โดยการยกกำลังหกทั้งสองฝั่ง:<br>- \\(a^6 = (3^{\\frac{1}{2}})^6 = 3^3 = 27\\)<br>- \\(b^6 = (5^{\\frac{1}{3}})^6 = 5^2 = 25\\)<br>เนื่องจาก \\(27 > 25\\) จะได้ว่า \\(a^6 > b^6\\) และเนื่องจากมีค่าเป็นบวกทั้งคู่ จึงสรุปได้ว่า \\(a > b\\) หรือ \\(\\sqrt{3} > \\sqrt[3]{5}\\)",
+            objective: "การเปรียบเทียบระหว่างค่ารากที่สองและรากที่สาม (การทำดัชนีรากให้เท่ากัน)"
+        },
+        {
+            num: 19,
+            section: "ส่วนที่ 4: โจทย์ปัญหาและการประยุกต์ใช้",
+            text: "กล่องทรงลูกบาศก์ใบหนึ่งมีปริมาตร 1,331 ลูกบาศก์เซนติเมตร อยากทราบว่าพื้นที่ผิวทั้งหมดของกล่องใบนี้เป็นกี่ตารางเซนติเมตร",
+            choices: ["ก. 121 ตารางเซนติเมตร", "ข. 484 ตารางเซนติเมตร", "ค. 726 ตารางเซนติเมตร", "ง. 968 ตารางเซนติเมตร"],
+            correct: 2,
+            sol: "- ให้ความยาวด้านของลูกบาศก์เป็น \\(s\\) เซนติเมตร<br>  ปริมาตร \\(s^3 = 1331 \\implies s = \\sqrt[3]{1331} = 11\\) ซม.<br>- พื้นที่ผิวทั้งหมดของลูกบาศก์ (มีผิวทั้งหมด 6 ด้าน) = \\(6 \\times s^2\\)<br>  แทนค่า: \\(6 \\times 11^2 = 6 \\times 121 = 726\\) ตารางเซนติเมตร",
+            objective: "โจทย์ปัญหาการนำรากที่สามไปประยุกต์ใช้ในเรื่องปริมาตรและพื้นที่ผิวของลูกบาศก์"
+        },
+        {
+            num: 20,
+            section: "ส่วนที่ 4: โจทย์ปัญหาและการประยุกต์ใช้",
+            text: "ที่ดินรูปสี่เหลี่ยมผืนผ้าผืนหนึ่งมีความกว้าง \\(\\sqrt{45}\\) เมตร และมีความยาว \\(\\sqrt{80}\\) เมตร ความยาวของเส้นทแยงมุมของที่ดินผืนนี้เท่ากับกี่เมตร",
+            choices: ["ก. 10 เมตร", "ข. \\(5\\sqrt{5}\\) เมตร", "ค. 25 เมตร", "ง. \\(\\sqrt{145}\\) เมตร"],
+            correct: 1,
+            sol: "ตามทฤษฎีบทพีทาโกรัสในเรขาคณิต: เส้นทแยงมุม \\(d = \\sqrt{\\text{กว้าง}^2 + \\text{ยาว}^2}\\)<br>\\(d = \\sqrt{(\\sqrt{45})^2 + (\\sqrt{80})^2} = \\sqrt{45 + 80} = \\sqrt{125}\\) เมตร (พิจารณาเฉพาะระยะทางที่เป็นบวก)<br>จัดรูปอย่างง่าย: \\(\\sqrt{125} = \\sqrt{25 \\times 5} = 5\\sqrt{5}\\) เมตร",
+            objective: "โจทย์ปัญหาการนำรากที่สองและทฤษฎีบทพีทาโกรัสไปใช้แก้ปัญหาทางเรขาคณิต"
+        }
+    ];
+
+    // Initialize map on screen load
+    function initQuestionMap() {
+        const grid = document.getElementById('q-map-grid-el');
+        grid.innerHTML = '';
+        for (let i = 0; i < questions.length; i++) {
+            const item = document.createElement('div');
+            item.className = 'q-map-item';
+            item.id = `q-map-item-${i}`;
+            item.textContent = i + 1;
+            item.onclick = () => jumpToQuestion(i);
+            grid.appendChild(item);
+        }
+        updateQuestionMapStatus();
+    }
+
+    function updateQuestionMapStatus() {
+        for (let i = 0; i < questions.length; i++) {
+            const item = document.getElementById(`q-map-item-${i}`);
+            if (!item) continue;
+            
+            // base status classes
+            item.className = 'q-map-item';
+            if (studentAnswers[i] !== null) {
+                item.classList.add('answered');
+            }
+            if (i === currentQuestionIndex) {
+                item.classList.add('active');
+            }
+        }
+    }
+
+    // Navigation and screen switching helpers
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        
+        // Render LaTeX equations in the loaded screen
+        setTimeout(() => {
+            const targetScreen = document.getElementById(screenId);
+            if (window.renderMathInElement) {
+                renderMathInElement(targetScreen, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "\\(", right: "\\)", display: false}
+                    ]
+                });
+            }
+        }, 50);
+    }
+
+    // Start Quiz action
+    function startQuiz(event) {
+        event.preventDefault();
+        
+        studentName = document.getElementById('student-name').value.trim();
+        studentClass = "";
+        studentNo = "";
+        
+        // Show student name badge
+        document.getElementById('display-student-name').textContent = `ผู้สอบ: ${studentName}`;
+        
+        // Reset quiz state
+        currentQuestionIndex = 0;
+        studentAnswers = Array(20).fill(null);
+        quizTimeLeft = 50 * 60; // 50 minutes
+        timeSpentSeconds = 0;
+        startTime = Date.now();
+        
+        initQuestionMap();
+        loadQuestion(0);
+        showScreen('quiz-screen');
+        
+        // Start countdown timer
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    // Update time counter
+    function updateTimer() {
+        quizTimeLeft--;
+        timeSpentSeconds = Math.floor((Date.now() - startTime) / 1000);
+        
+        if (quizTimeLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('time-left').textContent = "หมดเวลา!";
+            alert("หมดเวลาทำข้อสอบแล้ว! ระบบจะทำการส่งกระดาษคำตอบของคุณโดยอัตโนมัติ");
+            submitQuiz();
+        } else {
+            const minutes = Math.floor(quizTimeLeft / 60);
+            const seconds = quizTimeLeft % 60;
+            const timerBox = document.getElementById('quiz-timer');
+            const timeLeftText = document.getElementById('time-left');
+            
+            timeLeftText.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Warnings alert styling if under 5 minutes
+            if (quizTimeLeft < 5 * 60) {
+                timerBox.classList.add('warning');
+            } else {
+                timerBox.classList.remove('warning');
+            }
+        }
+    }
+
+    // Load question page
+    function loadQuestion(index) {
+        currentQuestionIndex = index;
+        const q = questions[index];
+        
+        // Section & text update
+        document.getElementById('question-section-label').textContent = q.section;
+        document.getElementById('question-text-el').innerHTML = q.text;
+        
+        // Render choices
+        const choicesContainer = document.getElementById('choices-container-el');
+        choicesContainer.innerHTML = '';
+        
+        // Add single-col layout class if texts are long to keep layout neat
+        const isLongText = q.choices.some(choice => choice.length > 25);
+        if (isLongText) {
+            choicesContainer.classList.add('single-col');
+        } else {
+            choicesContainer.classList.remove('single-col');
+        }
+
+        q.choices.forEach((choice, idx) => {
+            const card = document.createElement('div');
+            card.className = 'choice-card';
+            if (studentAnswers[index] === idx) {
+                card.classList.add('selected');
+            }
+            card.onclick = () => selectChoice(idx);
+            card.innerHTML = choice;
+            choicesContainer.appendChild(card);
+        });
+
+        // Navigation button configurations
+        document.getElementById('progress-question-num').textContent = `คำถามข้อที่ ${index + 1} / 20`;
+        const percent = Math.round(((studentAnswers.filter(a => a !== null).length) / questions.length) * 100);
+        document.getElementById('progress-percent').textContent = `${percent}% เสร็จสิ้น`;
+        document.getElementById('progress-bar-fill').style.width = `${((index + 1) / questions.length) * 100}%`;
+        
+        // Disable back on index 0
+        if (index === 0) {
+            document.getElementById('btn-prev').classList.add('btn-disabled');
+        } else {
+            document.getElementById('btn-prev').classList.remove('btn-disabled');
+        }
+
+        // Show submit button on index 19 instead of Next
+        if (index === questions.length - 1) {
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('btn-submit').style.display = 'inline-flex';
+        } else {
+            document.getElementById('btn-next').style.display = 'inline-flex';
+            document.getElementById('btn-submit').style.display = 'none';
+        }
+
+        updateQuestionMapStatus();
+        
+        // Math formatting triggering
+        if (window.renderMathInElement) {
+            renderMathInElement(document.getElementById('quiz-screen'), {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\(", right: "\\)", display: false}
+                ]
+            });
+        }
+    }
+
+    function selectChoice(choiceIndex) {
+        studentAnswers[currentQuestionIndex] = choiceIndex;
+        
+        // Update styling instantly
+        const cards = document.querySelectorAll('.choice-card');
+        cards.forEach((card, idx) => {
+            if (idx === choiceIndex) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+        
+        updateQuestionMapStatus();
+        
+        // Update progress bar
+        const percent = Math.round(((studentAnswers.filter(a => a !== null).length) / questions.length) * 100);
+        document.getElementById('progress-percent').textContent = `${percent}% เสร็จสิ้น`;
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            loadQuestion(currentQuestionIndex - 1);
+        }
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            loadQuestion(currentQuestionIndex + 1);
+        }
+    }
+
+    function jumpToQuestion(index) {
+        loadQuestion(index);
+    }
+
+    // Submit Action & Alert Confirm
+    function confirmSubmitQuiz() {
+        const unansweredCount = studentAnswers.filter(a => a === null).length;
+        let confirmText = "คุณแน่ใจหรือไม่ว่าต้องการส่งกระดาษคำตอบ?";
+        if (unansweredCount > 0) {
+            confirmText = `คุณยังไม่ได้ทำข้อสอบอีก ${unansweredCount} ข้อ\nต้องการยืนยันที่จะส่งคำตอบใช่หรือไม่?`;
+        }
+        
+        if (confirm(confirmText)) {
+            submitQuiz();
+        }
+    }
+
+    function submitQuiz() {
+        clearInterval(timerInterval);
+        
+        // Score calculation
+        let correctCount = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (studentAnswers[i] === questions[i].correct) {
+                correctCount++;
+            }
+        }
+        
+        // Display stats
+        document.getElementById('result-name').textContent = studentName;
+        
+        // Time format converter
+        const minutesSpent = Math.floor(timeSpentSeconds / 60);
+        const secondsSpent = timeSpentSeconds % 60;
+        document.getElementById('result-time-spent').textContent = `${minutesSpent} นาที ${secondsSpent} วินาที`;
+        document.getElementById('result-correct-count').textContent = `${correctCount} / 20 ข้อ (คิดเป็น ${Math.round((correctCount/20)*100)}%)`;
+        document.getElementById('result-score-txt').textContent = correctCount;
+        
+        // Circle progress bar fill offsets calculation (stroke length = 440)
+        const offset = 440 - (440 * (correctCount / 20));
+        document.getElementById('score-circle-fill').style.strokeDashoffset = offset;
+        
+        // Grading Evaluation Messages
+        const scorePercentage = (correctCount / 20) * 100;
+        let evalText = "";
+        let evalColor = "var(--success)";
+        if (scorePercentage >= 80) {
+            evalText = "ผ่านการประเมิน: ดีเยี่ยม 🌟";
+            evalColor = "var(--success)";
+        } else if (scorePercentage >= 60) {
+            evalText = "ผ่านการประเมิน: ดี 👍";
+            evalColor = "var(--success)";
+        } else if (scorePercentage >= 50) {
+            evalText = "ผ่านการประเมิน: พอใช้ 👌";
+            evalColor = "var(--warning)";
+        } else {
+            evalText = "ไม่ผ่านการประเมิน: ควรปรับปรุงเพิ่มเติม ✍️";
+            evalColor = "var(--error)";
+        }
+        const evalEl = document.getElementById('result-evaluation-txt');
+        evalEl.textContent = evalText;
+        evalEl.style.color = evalColor;
+        document.getElementById('score-circle-fill').style.stroke = evalColor;
+
+        showScreen('summary-screen');
+    }
+
+    // Solutions Explorer Screen Build
+    function showSolutionsScreen() {
+        const solutionsList = document.getElementById('solutions-list-el');
+        solutionsList.innerHTML = '';
+        
+        questions.forEach((q, index) => {
+            const isCorrect = studentAnswers[index] === q.correct;
+            const chosenAns = studentAnswers[index];
+            
+            const card = document.createElement('div');
+            card.className = `solution-card ${isCorrect ? 'correct' : 'incorrect'}`;
+            
+            // Header bar
+            const titleBar = document.createElement('div');
+            titleBar.className = 'solution-title-bar';
+            titleBar.innerHTML = `
+                <h3>ข้อที่ ${q.num} [${q.section}]</h3>
+                <span class="status-badge">${isCorrect ? '✓ ถูกต้อง' : '✗ ผิด'}</span>
+            `;
+            card.appendChild(titleBar);
+            
+            // Main inner content
+            const content = document.createElement('div');
+            content.className = 'solution-content';
+            
+            // Question display
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.innerHTML = q.text;
+            content.appendChild(qText);
+            
+            // Choices list review
+            const choicesDiv = document.createElement('div');
+            choicesDiv.className = 'solution-choices';
+            
+            q.choices.forEach((choice, idx) => {
+                const choiceEl = document.createElement('div');
+                choiceEl.className = 'sol-choice';
+                
+                // Add conditional status colors
+                if (idx === q.correct) {
+                    choiceEl.classList.add('correct-ans');
+                    choiceEl.innerHTML = `${choice} <span> (คำตอบที่ถูกต้อง)</span>`;
+                } else if (idx === chosenAns) {
+                    choiceEl.classList.add('selected-wrong');
+                    choiceEl.innerHTML = `${choice} <span> (คำตอบที่คุณเลือก)</span>`;
+                } else {
+                    choiceEl.innerHTML = choice;
+                }
+                
+                choicesDiv.appendChild(choiceEl);
+            });
+            content.appendChild(choicesDiv);
+            
+            // Dotted box showing math solution details
+            const expBox = document.createElement('div');
+            expBox.className = 'explanation-box';
+            expBox.innerHTML = `
+                <h4>💡 วิธีทำ / แนวคิด:</h4>
+                <p>${q.sol}</p>
+                <div class="obj-box">ตัวชี้วัด/ทักษะประเมิน: <strong>${q.objective}</strong></div>
+            `;
+            content.appendChild(expBox);
+            
+            card.appendChild(content);
+            solutionsList.appendChild(card);
+        });
+        
+        showScreen('solutions-screen');
+    }
+
+    function backToSummary() {
+        showScreen('summary-screen');
+    }
+
+    function restartQuiz() {
+        if (confirm("ต้องการรีเซ็ตแบบทดสอบเพื่อทำใหม่อีกครั้งใช่หรือไม่?")) {
+            showScreen('welcome-screen');
+            document.getElementById('start-form').reset();
+        }
+    }
+</script>
+
+</body>
+</html>
